@@ -4,6 +4,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -253,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         num1 = stringResult;
-        operation.setNumberOne(Double.parseDouble(num1));
+        //operation.setNumberOne(Integer.parseInt(num1,base)); No le veo utilidad
         nextMark = false;
         markNum2 = true;
 
@@ -342,11 +343,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(markNum2){
             stringResult += num2;
-            insertNumberOperation(Double.parseDouble(stringResult));
+            insertNumberOperation(Integer.parseInt(stringResult,base));
             if(s.equals(",")) stringResult = stringResult.substring(0, stringResult.length()-1);
         }else{
             stringResult += num1;
-            insertNumberOperation(Double.parseDouble(stringResult));
+            insertNumberOperation(Integer.parseInt(stringResult,base));
             if(s.equals(",")) stringResult = stringResult.substring(0, stringResult.length()-1);
         }
 
