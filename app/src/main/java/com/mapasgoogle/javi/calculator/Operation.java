@@ -62,4 +62,8 @@ public class Operation {
         return (n1/100*n2);
     }
 
+    double operationMod(double n1, double n2){
+        return (n1%n2);
+    }
+
 }

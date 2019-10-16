@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button buttonSum;
     private Button buttonEqu;
     private Button buttonDec;
+    private Button buttonMod;
     private RadioButton binario;
     private RadioButton decimal;
     private RadioButton octal;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button8 =  findViewById(R.id.bt8);
         button9 =  findViewById(R.id.bt9);
         buttonDec =  findViewById(R.id.btDec);
+        buttonMod =  findViewById(R.id.btMod);
         buttonEqu =  findViewById(R.id.btEqu);
         binario = findViewById(R.id.rb_binario);
         decimal = findViewById(R.id.rb_decimal);
@@ -100,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button8.setOnClickListener(this);
         button9.setOnClickListener(this);
         buttonDec.setOnClickListener(this);
+        buttonMod.setOnClickListener(this);
         buttonEqu.setOnClickListener(this);
         decimal.setOnClickListener(this);
         binario.setOnClickListener(this);
@@ -167,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btSum:
                 configureOperation("sum", buttonSum);
                 break;
+            case R.id.btMod:
+                configureOperation("mod", buttonMod);
+                break;
             case R.id.rb_binario:
                 base = 2;
                 actualizaEstadoBotones();
@@ -189,9 +195,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     buttonPro.setBackground(getDrawable(R.drawable.button_secundary_no_pressed));
                     buttonRes.setBackground(getDrawable(R.drawable.button_secundary_no_pressed));
                     buttonSum.setBackground(getDrawable(R.drawable.button_secundary_no_pressed));
+                    buttonMod.setBackground(getDrawable(R.drawable.button_secundary_no_pressed));
                 }
                 markNum2 = false;
                 lastPressedKey = "=";
+                if(base==2){
+                    stringResult = Integer.toBinaryString(Integer.parseInt(stringResult));
+                }
+                if(base==8){
+                    stringResult = Integer.toOctalString(Integer.parseInt(stringResult));
+                }
                 break;
         }
 
@@ -242,6 +255,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case "porc":
                     stringResult = String.valueOf(operation.operationPorcentage(operation.getNumberOne(), operation.getNumberTwo()));
                     break;
+                case "mod":
+                    stringResult = String.valueOf(operation.operationMod(operation.getNumberOne(), operation.getNumberTwo()));
+                    break;
             }
             if(stringResult.substring(stringResult.length()-1, stringResult.length()).equals("0") &&
                     stringResult.substring(stringResult.length()-2, stringResult.length()-1).equals(".")){
@@ -252,9 +268,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(stringResult.indexOf(".") > -1 && stringResult.length() > 1) {
             deleteCeros();
         }
-
-        num1 = stringResult;
-        //operation.setNumberOne(Integer.parseInt(num1,base)); No le veo utilidad
+        //deberia ir num = stringResult, pero produce excepcion si lo vuelvo a convertir a decimal
+        num1 = "" + (operation.getNumberOne() + operation.getNumberTwo());
+        Log.i(null, "checkOperation: " + num1 + "---" + operation.getNumberOne());
+        operation.setNumberOne(Double.parseDouble(num1));
+        Log.i(null, "checkOperation: " + num1 + "---" + operation.getNumberOne());
         nextMark = false;
         markNum2 = true;
 
@@ -404,6 +422,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Actualiza el estado de los botones según base elegida
+     */
     private void actualizaEstadoBotones(){
         cleanAll();
         buttonMM.setEnabled(base==10);
