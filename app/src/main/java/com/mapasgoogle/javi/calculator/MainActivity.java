@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button buttonSum;
     private Button buttonEqu;
     private Button buttonDec;
+
     private Button buttonMod;
     private RadioButton binario;
     private RadioButton decimal;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean nextMark = true;
     private boolean markNum2 = false;
     private String lastPressedKey = null;
+
     private int base = 10;
 
 
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonDec =  findViewById(R.id.btDec);
         buttonMod =  findViewById(R.id.btMod);
         buttonEqu =  findViewById(R.id.btEqu);
+
         binario = findViewById(R.id.rb_binario);
         decimal = findViewById(R.id.rb_decimal);
         octal = findViewById(R.id.rb_octal);
@@ -199,15 +202,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 markNum2 = false;
                 lastPressedKey = "=";
-                if(base==2){
-                    stringResult = Integer.toBinaryString(Integer.parseInt(stringResult));
-                }
-                if(base==8){
-                    stringResult = Integer.toOctalString(Integer.parseInt(stringResult));
-                }
                 break;
         }
-
         textViewBox.setText(stringResult);
     }
 
@@ -234,45 +230,77 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * Realiza la operacion
+     * Realiza las operaciones
+     * Se convierten ambos operandos de la base seleccionada a decimal y se realiza la operacion,
+     * luego el resultado se convierte a la base seleccionada
      */
     private void checkOperation() {
         if(operation.getOperation1() != null && operation.getNumberTwo() != 0.0){
             // Realizo operacion
-            switch (operation.getOperation1()){
-                case "sum":
-                    stringResult = String.valueOf(operation.operationSum(operation.getNumberOne(), operation.getNumberTwo()));
-                    break;
-                case "res":
-                    stringResult = String.valueOf(operation.operationDeduct(operation.getNumberOne(), operation.getNumberTwo()));
-                    break;
-                case "prod":
-                    stringResult = String.valueOf(operation.operationProduct(operation.getNumberOne(), operation.getNumberTwo()));
-                    break;
-                case "div":
-                    stringResult = String.valueOf(operation.operationDivision(operation.getNumberOne(), operation.getNumberTwo()));
-                    break;
-                case "porc":
-                    stringResult = String.valueOf(operation.operationPorcentage(operation.getNumberOne(), operation.getNumberTwo()));
-                    break;
-                case "mod":
-                    stringResult = String.valueOf(operation.operationMod(operation.getNumberOne(), operation.getNumberTwo()));
-                    break;
-            }
-            if(stringResult.substring(stringResult.length()-1, stringResult.length()).equals("0") &&
-                    stringResult.substring(stringResult.length()-2, stringResult.length()-1).equals(".")){
-                stringResult = stringResult.replace(".0", "");
+            try{
+                //Se convierten ambos operandos de la base seleccionada a decimal
+                int n1 = Integer.parseInt(String.valueOf((int)operation.getNumberOne()),base);
+                int n2 = Integer.parseInt(String.valueOf((int)operation.getNumberTwo()),base);
+                switch (operation.getOperation1()){
+                    case "sum":
+                        //Se convierte el resultado a la base seleccionada siempre que esta no sea decimal
+                        if(base!=10){
+                            stringResult = Integer.toString(Integer.parseInt(String.valueOf((int)operation.operationSum(n1,n2))),base);
+                        }else{
+                            stringResult = String.valueOf(operation.operationSum(operation.getNumberOne(), operation.getNumberTwo()));
+                        }
+                        break;
+                    case "res":
+                        if(base!=10){
+                            stringResult = Integer.toString(Integer.parseInt(String.valueOf((int)operation.operationDeduct(n1,n2))),base);
+                        }else{
+                            stringResult = String.valueOf(operation.operationDeduct(operation.getNumberOne(), operation.getNumberTwo()));
+                        }
+                        break;
+                    case "prod":
+                        if(base!=10){
+                            stringResult = Integer.toString(Integer.parseInt(String.valueOf((int)operation.operationProduct(n1,n2))),base);
+                        }else{
+                            stringResult = String.valueOf(operation.operationProduct(operation.getNumberOne(), operation.getNumberTwo()));
+                        }
+                        break;
+                    case "div":
+                        if(base!=10){
+                            stringResult = Integer.toString(Integer.parseInt(String.valueOf((int)operation.operationDivision(n1,n2))),base);
+                        }else{
+                            stringResult = String.valueOf(operation.operationDivision(operation.getNumberOne(), operation.getNumberTwo()));
+                        }
+                        break;
+                    case "porc":
+                        if(base!=10){
+                            stringResult = Integer.toString(Integer.parseInt(String.valueOf((int)operation.operationPorcentage(n1,n2))),base);
+                        }else{
+                            stringResult = String.valueOf(operation.operationPorcentage(operation.getNumberOne(), operation.getNumberTwo()));
+                        }
+                        break;
+                    case "mod":
+                        if(base!=10){
+                            stringResult = Integer.toString(Integer.parseInt(String.valueOf((int)operation.operationMod(n1,n2))),base);
+                        }else{
+                            stringResult = String.valueOf(operation.operationMod(operation.getNumberOne(), operation.getNumberTwo()));
+                        }
+                        break;
+                }
+                if(stringResult.substring(stringResult.length()-1, stringResult.length()).equals("0") &&
+                        stringResult.substring(stringResult.length()-2, stringResult.length()-1).equals(".")){
+                    stringResult = stringResult.replace(".0", "");
+                }
+            }catch(Exception error){
+                stringResult = "0";
             }
         }
 
         if(stringResult.indexOf(".") > -1 && stringResult.length() > 1) {
             deleteCeros();
         }
-        //deberia ir num = stringResult, pero produce excepcion si lo vuelvo a convertir a decimal
-        num1 = "" + (operation.getNumberOne() + operation.getNumberTwo());
-        Log.i(null, "checkOperation: " + num1 + "---" + operation.getNumberOne());
+
+        num1 = stringResult;
         operation.setNumberOne(Double.parseDouble(num1));
-        Log.i(null, "checkOperation: " + num1 + "---" + operation.getNumberOne());
         nextMark = false;
         markNum2 = true;
 
@@ -283,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
 
     /**
      * Elimina ceros que puede dar el double a partir de la coma
@@ -361,11 +390,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(markNum2){
             stringResult += num2;
-            insertNumberOperation(Integer.parseInt(stringResult,base));
+            insertNumberOperation(Double.parseDouble(stringResult));
             if(s.equals(",")) stringResult = stringResult.substring(0, stringResult.length()-1);
         }else{
             stringResult += num1;
-            insertNumberOperation(Integer.parseInt(stringResult,base));
+            insertNumberOperation(Double.parseDouble(stringResult));
             if(s.equals(",")) stringResult = stringResult.substring(0, stringResult.length()-1);
         }
 
