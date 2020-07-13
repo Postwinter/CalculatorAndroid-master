@@ -9,6 +9,7 @@
   <li>Multiplicaciones.</li>
   <li>Divisiones.</li>
   <li>Porcentaje de una cantidad dada.</li>
+  <li>Resto de una división</li>
 </ul>
 
 <p>El proyecto está realizado íntegramente con el IDE <b>Android Studio</b>. Consta de tres partes principales: </p>
